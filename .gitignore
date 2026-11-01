@@ -73,3 +73,15 @@ Plugins/**/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+
+# IDE tambahan (sangat disarankan jika kamu nantinya menggunakan JetBrains Rider atau VS Code)
+.idea/
+.vscode/
+
+# Project file untuk Mac (jika berkolaborasi dengan pengguna macOS)
+*.xcworkspace/
+
+# OS Generated Files
+.DS_Store
+Thumbs.db
+ehthumbs.db
