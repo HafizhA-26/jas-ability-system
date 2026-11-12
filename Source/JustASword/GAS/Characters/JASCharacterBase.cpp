@@ -2,7 +2,6 @@
 
 
 #include "JASCharacterBase.h"
-
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -32,6 +31,9 @@ AJASCharacterBase::AJASCharacterBase()
 	MovementComponent->MinAnalogWalkSpeed = 20.0f;
 	MovementComponent->BrakingDecelerationWalking = 2000.0f;
 	MovementComponent->BrakingDecelerationFalling = 1500.0f;
+
+	// Add basic attributes
+	BasicAttributes = CreateDefaultSubobject<UBaseAttributes>(TEXT("BasicAttributes"));
 }
 
 // Called when the game starts or when spawned

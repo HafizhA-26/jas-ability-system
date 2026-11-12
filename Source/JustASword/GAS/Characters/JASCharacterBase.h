@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "JustASword/GAS/Attributes/BaseAttributes.h"
 #include "JASCharacterBase.generated.h"
 
 UCLASS()
@@ -18,7 +19,10 @@ public:
 
 	// Ability System Component
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AbilitySystem")
-	class UAbilitySystemComponent* AbilitySystemComponent;
+	UAbilitySystemComponent* AbilitySystemComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AbilitySystem")
+	UBaseAttributes* BasicAttributes;
 
 protected:
 
