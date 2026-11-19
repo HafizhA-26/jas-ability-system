@@ -36,36 +36,5 @@ public:
 	TArray<FAbilityInfo> AbilityInformation;
 	
 	UFUNCTION(BlueprintCallable, Category = "Ability Info")
-	FAbilityInfo FindAbilityInfo(const UGameplayAbility* TargetAbility, bool& bFound, bool bLogNotFound = false) const
-	{
-		bFound = false;
-
-		// Pre-check target ability vailidty
-		if (!IsValid(TargetAbility))
-		{
-			if (bLogNotFound)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Target Ability Class is Empty"));
-			}
-			return FAbilityInfo();
-		}
-		
-		// Get abilty info data
-		for (const FAbilityInfo& Info : AbilityInformation)
-		{
-
-			if (Info.AbilityClass && TargetAbility->IsA(Info.AbilityClass))
-			{
-				bFound = true;
-				return Info;
-			}
-		}
-
-		if (bLogNotFound)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Can't find info for Ability Info for Ability : [%s]"), *GetNameSafe(TargetAbility->GetClass()));
-		}
-
-		return FAbilityInfo();
-	}
+	FAbilityInfo FindAbilityInfo(const UGameplayAbility* TargetAbility, bool& bFound, bool bLogNotFound = false) const;
 };
