@@ -3,6 +3,8 @@
 
 #include "JASCharacterBase.h"
 #include "Components/CapsuleComponent.h"
+#include <AbilitySystemBlueprintLibrary.h>
+#include <JustASword/GAS/JASAbilitySystemComponent.h>
 #include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
@@ -11,7 +13,7 @@ AJASCharacterBase::AJASCharacterBase()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystem"));
+	AbilitySystemComponent = CreateDefaultSubobject<UJASAbilitySystemComponent>(TEXT("AbilitySystem"));
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(ASCReplicationMode);
 
@@ -64,6 +66,7 @@ void AJASCharacterBase::PossessedBy(AController* NewController)
 	if (AbilitySystemComponent)
 	{
 		AbilitySystemComponent->InitAbilityActorInfo(this, this);
+		GrantAbilities(StartAbilities);
 	}
 }
 
@@ -80,4 +83,51 @@ void AJASCharacterBase::OnRep_PlayerState()
 UAbilitySystemComponent* AJASCharacterBase::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
+}
+
+TArray<FGameplayAbilitySpecHandle> AJASCharacterBase::GrantAbilities(TArray<TSubclassOf<UGameplayAbility>> AbilitiesToGrant)
+{
+	if (!AbilitySystemComponent || !HasAuthority())
+	{
+		return TArray<FGameplayAbilitySpecHandle>();
+	}
+
+	TArray<FGameplayAbilitySpecHandle> SpecHandles;
+
+	for (TSubclassOf<UGameplayAbility> Ability : AbilitiesToGrant)
+	{
+		FGameplayAbilitySpecHandle SpecHandle = AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability, 1, -1, this));
+		SpecHandles.Add(SpecHandle);
+	}
+	
+	SendAbilitiesChangedEvent();
+
+	return SpecHandles;
+}
+
+void AJASCharacterBase::ClearAbilities(TArray<FGameplayAbilitySpecHandle> AbilityHandlesToRemove)
+{
+	if (!AbilitySystemComponent || !HasAuthority())
+	{
+		return;
+	}
+
+	for (FGameplayAbilitySpecHandle SpecHandle : AbilityHandlesToRemove)
+	{
+		AbilitySystemComponent->ClearAbility(SpecHandle);
+	}
+
+	SendAbilitiesChangedEvent();
+}
+
+void AJASCharacterBase::SendAbilitiesChangedEvent()
+{
+	FGameplayEventData EventData;
+	EventData.EventTag = FGameplayTag::RequestGameplayTag(FName("GameplayAbility.SkillsEvent.Changed"));
+	EventData.Instigator = this;
+	EventData.Target = this;
+
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, EventData.EventTag, EventData);
+
+
 }
